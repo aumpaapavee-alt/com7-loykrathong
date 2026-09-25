@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>COM7 ลอยกระทง สานสายใจ 2026</title>
+<meta name="description" content="COM7 ลอยกระทง สานสายใจ 2026 — แต่งลุค แต่งกระทง เขียนคำอวยพร แล้วลอยกระทงในสายน้ำวัดอรุณ" />
+<link rel="icon" href="assets/favicon.png" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+<meta property="og:title" content="COM7 ลอยกระทง สานสายใจ 2026" />
+<meta property="og:image" content="assets/og_image.jpg" />
+<meta property="og:type" content="website" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&family=Charmonman:wght@400;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet" />
+<style>
+/* ============================================================
+   COM7 ลอยกระทง สานสายใจ 2026
+   ผู้พัฒนา: แจ็ค (IT/MIS) · คอนเซ็ปต์กิจกรรม: ฟ้าใส (HR)
+   Single-file SPA — scene switching
+   ============================================================ */
+:root{
+  --navy-900:#070b1f; --navy-800:#0c1330; --navy-700:#141c47;
+  --navy-600:#1d2860; --gold:#e8c874; --gold-2:#f6e2a6;
+  --gold-deep:#b8912f; --com7-green:#5cb531; --ink:#f4f1e6;
+  --glass:rgba(255,255,255,.10); --glass-brd:rgba(255,255,255,.22);
+  --shadow:0 18px 50px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%}
+body{
+  font-family:'Anuphan',system-ui,sans-serif;
+  color:var(--ink);
+  background:radial-gradient(120% 90% at 50% 0%,#141c47 0%,#0c1330 45%,#070b1f 100%);
+  overflow:hidden;
+}
+.thai-script{font-family:'Charmonman',cursive}
+.serif{font-family:'Cormorant Garamond',serif}
+
+/* ---------- App shell ---------- */
+#app{position:fixed;inset:0;overflow:hidden}
+.scene{
+  position:absolute;inset:0;display:none;flex-direction:column;
+  align-items:center;justify-content:center;padding:24px 18px;
+  overflow-y:auto;opacity:0;transition:opacity .5s ease;
+}
+.scene.active{display:flex;opacity:1;z-index:2}
+.scene-inner{width:100%;max-width:520px;margin:auto;position:relative;z-index:5}
+
+/* ---------- Ambient (โคมลอย ดาว) ---------- */
+.ambient{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1}
+.stars-layer{position:absolute;inset:0;background:url('assets/stars.png') repeat;
+  background-size:600px;opacity:.35;animation:twinkle 6s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.22}50%{opacity:.5}}
+.lantern{position:absolute;width:54px;opacity:.9;
+  filter:drop-shadow(0 0 14px rgba(255,180,80,.55));
+  animation:floatUp linear infinite}
+@keyframes floatUp{
+  0%{transform:translateY(110vh) translateX(0) rotate(-4deg);opacity:0}
+  10%{opacity:.9}
+  90%{opacity:.9}
+  100%{transform:translateY(-20vh) translateX(30px) rotate(4deg);opacity:0}
+}
+.moon-glow{position:absolute;top:6%;right:8%;width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle,#fff8e0 0%,#f6e2a6 40%,transparent 70%);
+  opacity:.5;filter:blur(2px);animation:twinkle 8s ease-in-out infinite}
+
+/* ---------- Buttons ---------- */
+.btn{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;
+  gap:8px;border:1px solid var(--glass-brd);border-radius:18px;
+  padding:16px 22px;font-family:'Anuphan';font-weight:600;font-size:1.05rem;
+  color:var(--ink);cursor:pointer;overflow:hidden;
+  background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.05));
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.35);
+  transition:transform .18s ease,box-shadow .18s ease;
+  animation:btnBob 3.4s ease-in-out infinite;
+}
+.btn::before{ /* sheen */
+  content:"";position:absolute;top:0;left:-140%;width:70%;height:100%;
+  background:linear-gradient(115deg,transparent,rgba(255,255,255,.55),transparent);
+  transform:skewX(-18deg);animation:sheen 4.2s ease-in-out infinite;
+}
+@keyframes sheen{0%{left:-140%}55%,100%{left:160%}}
+@keyframes btnBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.btn:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 24px 60px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.45)}
+.btn:active{transform:scale(.97)}
+.btn-gold{
+  background:linear-gradient(135deg,#f6e2a6,#e8c874 45%,#b8912f);
+  color:#241a05;border-color:rgba(255,255,255,.5);font-weight:700;
+}
+.btn-lg{padding:20px 26px;font-size:1.15rem;border-radius:22px}
+.btn-block{display:flex;width:100%}
+.btn-ghost{animation:none;background:linear-gradient(135deg,rgba(255,255,255,.10),rgba(255,255,255,.03))}
+.btn-row{display:flex;flex-direction:column;gap:14px;margin-top:8px}
+
+/* ---------- Cover ---------- */
+#cover{background:
+  linear-gradient(180deg,rgba(7,11,31,.30) 0%,rgba(7,11,31,.55) 60%,rgba(7,11,31,.85) 100%),
+  url('assets/cover_bg.png') center/cover no-repeat;}
+.cover-logo{
+  width:min(66vw,260px);max-width:88%;height:auto;object-fit:contain;
+  margin:0 auto 6px;display:block;box-sizing:border-box;
+  filter:drop-shadow(0 6px 18px rgba(0,0,0,.55)) contrast(1.08) saturate(1.05) brightness(1.05);
+}
+.cover-title{
+  font-family:'Charmonman';font-weight:700;text-align:center;line-height:1.1;
+  font-size:clamp(2.1rem,9vw,3.4rem);margin:10px 0 4px;
+  color:var(--gold-2);
+  text-shadow:0 2px 0 var(--gold-deep),0 10px 30px rgba(0,0,0,.5);
+}
+.cover-sub{ text-align:center;font-family:'Cormorant Garamond';font-style:italic;
+  font-size:1.05rem;color:#d8dcf0;letter-spacing:.5px;margin-bottom:26px}
+.cover-foot{position:absolute;bottom:22px;left:0;right:0;text-align:center;
+  font-size:.9rem;color:#c9cfe8;letter-spacing:1px;z-index:5}
+
+/* ---------- Cards / panels ---------- */
+.panel{
+  background:linear-gradient(160deg,rgba(29,40,96,.55),rgba(12,19,48,.65));
+  border:1px solid var(--glass-brd);border-radius:22px;padding:20px;
+  backdrop-filter:blur(10px);box-shadow:var(--shadow);
+}
+.h-title{font-family:'Charmonman';font-size:1.7rem;color:var(--gold-2);text-align:center;margin:0 0 4px}
+.h-sub{text-align:center;color:#c3c9e6;font-size:.92rem;margin:0 0 18px}
+
+/* ---------- Photo / camera studio ---------- */
+.photo-stage{position:relative;width:100%;aspect-ratio:3/4;max-height:52vh;
+  border-radius:20px;overflow:hidden;background:#05070f;
+  border:1px solid var(--glass-brd);box-shadow:var(--shadow);margin-bottom:14px}
+.photo-stage video,.photo-stage img.usr{width:100%;height:100%;object-fit:cover;display:block}
+.photo-frame-logo{position:absolute;left:10px;bottom:10px;width:74px;max-width:45%;height:auto;object-fit:contain;z-index:6;box-sizing:border-box;
+  filter:drop-shadow(0 2px 6px rgba(0,0,0,.6)) brightness(1.08) contrast(1.1);
+  background:#fff;border-radius:10px;padding:5px 8px}
+.photo-frame-tag{position:absolute;right:10px;top:10px;z-index:6;font-family:'Charmonman';
+  color:var(--gold-2);font-size:1rem;text-shadow:0 1px 4px #000;background:rgba(7,11,31,.4);
+  padding:2px 10px;border-radius:12px}
+.filter-controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 4px}
+.slider-wrap label{display:block;font-size:.82rem;color:#c3c9e6;margin-bottom:2px}
+input[type=range]{width:100%;accent-color:var(--gold)}
+.chip-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:10px 0}
+.chip{padding:8px 14px;border-radius:14px;font-size:.85rem;cursor:pointer;
+  border:1px solid var(--glass-brd);background:var(--glass);color:var(--ink);transition:.15s}
+.chip.active{background:linear-gradient(135deg,#f6e2a6,#e8c874);color:#241a05;font-weight:600}
+
+/* ---------- Decorate krathong ---------- */
+.krathong-stage{position:relative;width:100%;aspect-ratio:1/1;max-height:46vh;margin:0 auto 12px}
+.krathong-base{position:absolute;inset:0;margin:auto;width:78%;height:78%;top:auto;bottom:0;
+  object-fit:contain;filter:drop-shadow(0 12px 24px rgba(0,0,0,.5))}
+.deco-layer{position:absolute;object-fit:contain;pointer-events:none;
+  filter:drop-shadow(0 4px 10px rgba(0,0,0,.35))}
+.face-on-krathong{position:absolute;left:50%;top:30%;transform:translate(-50%,-50%);
+  width:34%;aspect-ratio:1/1;border-radius:50%;object-fit:cover;z-index:8;
+  border:3px solid var(--gold-2);box-shadow:0 4px 14px rgba(0,0,0,.5)}
+.opt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
+.tier-hint{font-size:.72rem;color:var(--gold-2);font-weight:500;opacity:.85}
+.opt{border:1px solid var(--glass-brd);border-radius:14px;padding:8px;background:var(--glass);
+  cursor:pointer;text-align:center;transition:.15s}
+.opt.active{border-color:var(--gold);background:rgba(232,200,116,.18)}
+.opt img{width:100%;height:52px;object-fit:contain}
+.opt span{font-size:.75rem;color:#c3c9e6}
+
+/* ---------- Inputs ---------- */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.88rem;color:#c3c9e6;margin-bottom:6px}
+.field input,.field textarea{
+  width:100%;padding:13px 14px;border-radius:14px;border:1px solid var(--glass-brd);
+  background:rgba(255,255,255,.07);color:var(--ink);font-family:'Anuphan';font-size:1rem;resize:none}
+.field textarea{min-height:92px}
+.field .hint{font-size:.75rem;color:#8f97bd;margin-top:4px}
+.field.err input,.field.err textarea{border-color:#ff8080}
+
+/* ---------- River scene ---------- */
+#river{padding:0}
+.river-bg{position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(7,11,31,.15),rgba(7,11,31,.35) 60%,rgba(7,11,31,.6)),
+  url('assets/bg_home.jpg') center/cover no-repeat;z-index:0}
+.water{position:absolute;left:0;right:0;bottom:0;height:46%;z-index:2;overflow:hidden;
+  background:linear-gradient(180deg,rgba(20,40,80,.1),rgba(10,20,50,.55));}
+.water::before,.water::after{content:"";position:absolute;left:-20%;right:-20%;height:60px;
+  background:radial-gradient(ellipse at center,rgba(246,226,166,.18),transparent 70%);
+  animation:ripple 5s ease-in-out infinite}
+.water::after{top:40%;animation-delay:-2.5s;opacity:.6}
+@keyframes ripple{0%,100%{transform:translateX(0) scaleY(1)}50%{transform:translateX(24px) scaleY(1.15)}}
+/* ★ Filter chips หน้าน้ำ */
+.chip-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:10px}
+.chip{border:1px solid var(--glass-brd);border-radius:999px;padding:7px 16px;
+  background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.04));
+  color:var(--ink);font-family:'Anuphan';font-size:.9rem;font-weight:600;cursor:pointer;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:all .2s ease}
+.chip:hover{transform:translateY(-2px)}
+.chip.active{background:linear-gradient(135deg,#f6e2a6,#e8c874 45%,#b8912f);color:#241a05;
+  border-color:rgba(255,255,255,.5);box-shadow:0 6px 18px rgba(232,200,116,.4)}
+.river-count{font-family:'Anuphan';font-size:1rem}
+.river-total-pill{display:inline-flex;align-items:center;gap:6px;margin:0 auto 10px;
+  padding:7px 18px;border-radius:999px;font-family:'Anuphan';font-weight:700;font-size:.95rem;
+  color:#241a05;background:linear-gradient(135deg,#f6e2a6,#e8c874 45%,#b8912f);
+  box-shadow:0 6px 18px rgba(232,200,116,.4)}
+.river-total-pill #krathongTotal{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:700}
+/* ★ gimmick: กระทงลอยหลายระนาบ (ลึก-กลาง-หน้า) ขนาด/ความทึบต่างกัน + ดริฟต์ไหลน้ำ */
+.floating-krathong.layer-back{width:52px;opacity:.72;filter:drop-shadow(0 4px 8px rgba(0,0,0,.4)) blur(.4px);z-index:3}
+.floating-krathong.layer-mid{width:72px;opacity:.9;z-index:4}
+.floating-krathong.layer-front{width:96px;opacity:1;z-index:5}
+@keyframes driftRiver{0%{transform:translateX(0) translateY(0) rotate(-3deg)}
+  50%{transform:translateX(14px) translateY(-9px) rotate(3deg)}
+  100%{transform:translateX(0) translateY(0) rotate(-3deg)}}
+.floating-krathong{position:absolute;width:78px;z-index:4;
+  filter:drop-shadow(0 6px 12px rgba(0,0,0,.5));animation:bobRiver 4.5s ease-in-out infinite}
+.floating-krathong .fk-face{position:absolute;left:50%;top:8%;transform:translateX(-50%);
+  width:40%;aspect-ratio:1/1;border-radius:50%;object-fit:cover;border:2px solid var(--gold-2)}
+@keyframes bobRiver{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-8px) rotate(3deg)}}
+@keyframes driftAway{to{transform:translate(var(--dx,40px),-40px);opacity:.85}}
+/* ★ Nav bar บน (ตาม reference) */
+.river-nav{position:absolute;top:0;left:0;right:0;z-index:12;display:flex;align-items:center;
+  justify-content:space-between;padding:14px 20px;
+  background:linear-gradient(180deg,rgba(7,11,31,.55),transparent)}
+.river-nav .nav-logo{height:34px;width:auto;object-fit:contain}
+.river-nav .nav-menu{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.river-nav .nav-menu a{color:#e9ecfb;font-family:'Anuphan';font-size:.92rem;font-weight:600;
+  text-decoration:none;cursor:pointer;opacity:.9;transition:.2s;white-space:nowrap}
+.river-nav .nav-menu a:hover,.river-nav .nav-menu a.active{color:var(--gold-2);opacity:1}
+.river-nav .nav-profile{width:34px;height:34px;border-radius:50%;border:1px solid var(--glass-brd);
+  display:flex;align-items:center;justify-content:center;color:#e9ecfb;background:rgba(255,255,255,.08)}
+/* ★ header บน (หัวเรื่อง+pill+chips) — วางบน ไม่ใช่ล่าง */
+.river-header{position:absolute;top:64px;left:0;right:0;z-index:10;text-align:center;padding:0 16px}
+.river-title{font-family:'Charmonman';font-size:2.4rem;line-height:1.05;color:var(--gold-2);margin:0;
+  text-shadow:0 2px 0 var(--gold-deep),0 10px 30px rgba(0,0,0,.5)}
+.river-subtitle{font-family:'Cormorant Garamond';font-style:italic;color:#e0d8f0;font-size:1rem;margin:6px 0 12px}
+@media(max-width:600px){.river-title{font-size:1.7rem}.river-nav .nav-menu{gap:10px}.river-nav .nav-menu a{font-size:.78rem}}
+.river-ui{position:absolute;left:0;right:0;bottom:0;z-index:8;padding:16px;
+  background:linear-gradient(180deg,transparent,rgba(7,11,31,.85));}
+.river-ui .scene-inner{max-width:520px}
+
+/* ---------- Banner ---------- */
+.promo-banner{margin-top:14px;border-radius:16px;padding:12px 14px;text-align:center;
+  font-size:.9rem;line-height:1.4;color:#241a05;
+  background:linear-gradient(135deg,#f6e2a6,#e8c874);box-shadow:var(--shadow)}
+.promo-banner b{color:#7a1f1f}
+.hashtag{font-weight:700;color:#0a3d0a}
+
+/* ---------- Fortune / result ---------- */
+.fortune-card{text-align:center}
+.fortune-num{font-family:'Cormorant Garamond';font-size:3rem;color:var(--gold-2);margin:0}
+.fortune-txt{font-size:1.05rem;line-height:1.6;margin:10px 0}
+
+/* ---------- misc ---------- */
+.center{text-align:center}
+.mt{margin-top:14px}.mb{margin-bottom:14px}
+.small{font-size:.82rem;color:#9aa2c8}
+.hidden{display:none!important}
+.spin{width:26px;height:26px;border:3px solid rgba(255,255,255,.25);border-top-color:var(--gold);
+  border-radius:50%;animation:sp .8s linear infinite;display:inline-block}
+@keyframes sp{to{transform:rotate(360deg)}}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(80px);
+  background:rgba(7,11,31,.92);border:1px solid var(--glass-brd);color:var(--ink);
+  padding:12px 20px;border-radius:14px;z-index:99;transition:.3s;opacity:0}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* ============================================================
+   WISH CARD (การ์ดคำอวยพร navy & gold) — prefix wc- กันชนคลาสเดิม
+   ============================================================ */
+.wc-wrap{ display:flex; justify-content:center; margin:6px 0 2px; }
+.wc-card{
+  width:270px; border-radius:20px; padding:3px; position:relative;
+  background:linear-gradient(150deg,#ffe9a8,#b8923d 45%,#ffe9a8 90%);
+  box-shadow:0 20px 44px rgba(0,0,0,.55);
+}
+.wc-inner{
+  position:relative; border-radius:18px; overflow:hidden; padding:20px 18px 16px;
+  min-height:430px; display:flex; flex-direction:column; align-items:center; text-align:center;
+  background:radial-gradient(120% 80% at 50% 0%,#16305a,#0b1e3a 60%,#0a1730);
+}
+.wc-corner{ position:absolute; width:46px; height:46px; opacity:.85; z-index:3; }
+.wc-corner.tl{ top:8px; left:8px; }
+.wc-corner.tr{ top:8px; right:8px; transform:scaleX(-1); }
+.wc-corner.bl{ bottom:8px; left:8px; transform:scaleY(-1); }
+.wc-corner.br{ bottom:8px; right:8px; transform:scale(-1,-1); }
+.wc-frame{ position:absolute; inset:12px; border:1px solid rgba(232,200,119,.32); border-radius:12px; pointer-events:none; z-index:2; }
+.wc-moon{ position:absolute; top:26px; width:70px; height:70px; border-radius:50%; z-index:1;
+  background:radial-gradient(circle at 38% 34%,#fffdf3,#ffe9a8 55%,#e8c877);
+  box-shadow:0 0 30px 10px rgba(232,200,119,.35), 0 0 70px 26px rgba(232,200,119,.12); opacity:.9; }
+.wc-stars{ position:absolute; inset:0; z-index:1; pointer-events:none; }
+.wc-st{ position:absolute; width:2px; height:2px; border-radius:50%; background:#fff; opacity:.7; animation:wctw 3s ease-in-out infinite; }
+@keyframes wctw{ 0%,100%{opacity:.2} 50%{opacity:.9} }
+.wc-badge{ position:relative; z-index:4; margin-top:6px; font-family:'Kanit',sans-serif; font-size:10.5px; font-weight:700;
+  color:#0b1e3a; background:linear-gradient(90deg,#ffe9a8,#e8c877); padding:4px 13px; border-radius:100px;
+  display:inline-flex; align-items:center; gap:5px; box-shadow:0 3px 10px rgba(232,200,119,.4); }
+.wc-krathong{ position:relative; z-index:4; width:96px; height:96px; margin:14px 0 6px;
+  object-fit:contain; filter:drop-shadow(0 6px 14px rgba(232,200,119,.45)); animation:wcbob 4s ease-in-out infinite; }
+@keyframes wcbob{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+.wc-ftitle{ position:relative; z-index:4; font-family:'Kanit',sans-serif; font-weight:700; font-size:15px;
+  color:#ffe9a8; margin-bottom:8px; letter-spacing:.3px; }
+.wc-ftext{ position:relative; z-index:4; font-size:12.5px; line-height:1.72; color:#e7ecfb; flex:1;
+  display:flex; align-items:center; padding:0 4px; font-family:'Sarabun',sans-serif; }
+.wc-divider{ position:relative; z-index:4; width:60%; height:1px; margin:12px 0 10px;
+  background:linear-gradient(90deg,transparent,#e8c877,transparent); }
+.wc-divider::before{ content:"\2726"; position:absolute; top:-9px; left:50%; transform:translateX(-50%);
+  color:#e8c877; font-size:11px; background:#0b1e3a; padding:0 6px; }
+.wc-name{ position:relative; z-index:4; font-family:'Kanit',sans-serif; font-size:13px; color:#cdd6ee; }
+.wc-name b{ color:#ffe9a8; font-size:16px; }
+.wc-lucky{ position:relative; z-index:4; font-family:'Kanit',sans-serif; font-size:12px; color:#cdd6ee; margin-top:4px; }
+.wc-lucky b{ color:#ffe9a8; font-size:20px; letter-spacing:2px; }
+.wc-footer{ position:relative; z-index:4; margin-top:12px; display:flex; flex-direction:column; align-items:center; gap:7px; justify-content:center; }
+.wc-hashtag{ font-family:'Kanit',sans-serif; font-size:9.5px; color:#e8c877; letter-spacing:.2px; white-space:nowrap; }
+.wc-com7img{ height:20px; width:auto; max-width:80%; object-fit:contain; background:#fff; padding:4px 9px; border-radius:7px; box-shadow:0 2px 6px rgba(0,0,0,.35); }
+/* per-theme */
+.wc-love  .wc-inner{ background:radial-gradient(120% 80% at 50% 0%,#4a1f3d,#2a1230 55%,#1a0c22); }
+.wc-love  .wc-badge{ background:linear-gradient(90deg,#ffc4e0,#ff8ac4); color:#3a0f2a; }
+.wc-work  .wc-inner{ background:radial-gradient(120% 80% at 50% 0%,#123a5a,#0b2440 55%,#08182f); }
+.wc-luck  .wc-inner{ background:radial-gradient(120% 80% at 50% 0%,#134a3a,#0b2e26 55%,#08201a); }
+.wc-luck  .wc-badge{ background:linear-gradient(90deg,#c6f5d6,#8affc4); color:#053a24; }
+.wc-fun   .wc-inner{ background:radial-gradient(120% 80% at 50% 0%,#3a2170,#221452 55%,#150d33); }
+.wc-fun   .wc-badge{ background:linear-gradient(90deg,#d9c9ff,#a78bfa); color:#1c0f43; }
+.wc-travel .wc-inner{ background:radial-gradient(120% 80% at 50% 0%,#0d4a66,#0a2f52 55%,#08203a); }
+.wc-travel .wc-badge{ background:linear-gradient(90deg,#bdeeff,#6be0ff); color:#053046; }
+.wc-create .wc-inner{ background:radial-gradient(120% 80% at 50% 0%,#4a2358,#2e1540 55%,#1c0d2b); }
+.wc-create .wc-badge{ background:linear-gradient(90deg,#ffd0f0,#ff9ae0); color:#33103a; }
+@media (prefers-reduced-motion:reduce){ .wc-st,.wc-krathong{ animation:none !important; } }
+
+</style>
+</head>
+<body>
+<div id="app">
+<svg width="0" height="0" style="position:absolute"><defs>
+  <g id="wcflourish">
+    <path d="M2 44 C2 20 20 2 44 2" fill="none" stroke="#e8c877" stroke-width="1.4"/>
+    <path d="M2 34 C2 18 18 2 34 2" fill="none" stroke="#e8c877" stroke-width=".9" opacity=".6"/>
+    <circle cx="6" cy="6" r="2.4" fill="#ffe9a8"/>
+    <path d="M10 40 q6 -8 16 -12 q-4 8 -12 12 q-2 1 -4 0z" fill="#e8c877" opacity=".7"/>
+  </g>
+</defs></svg>
+
+  <!-- ============ ambient ============ -->
+  <div class="ambient" id="ambient">
+    <div class="stars-layer"></div>
+    <div class="moon-glow"></div>
+  </div>
+
+  <!-- ============ 1) COVER ============ -->
+  <section class="scene active" id="cover">
+    <div class="scene-inner center">
+      <img src="assets/com7_logo.png" alt="COM7" class="cover-logo" />
+      <h1 class="cover-title">COM7 ลอยกระทง<br/>สานสายใจ</h1>
+      <p class="cover-sub">แสงเทียนหนึ่งดวง สานใจเราชาว COM7</p>
+      <div class="btn-row">
+        <button class="btn btn-gold btn-lg btn-block" onclick="go('krathong')">🪷 เริ่มลอยกระทง</button>
+        <button class="btn btn-lg btn-block" onclick="go('river')">🌊 ดูสายน้ำรวม</button>
+      </div>
+    </div>
+    <div class="cover-foot">COM7 ลอยกระทง สานสายใจ 2026</div>
+  </section>
+
+  <!-- ============ 3) DECORATE KRATHONG ============ -->
+  <section class="scene" id="krathong">
+    <div class="scene-inner">
+      <h2 class="h-title">แต่งกระทงของคุณ</h2>
+      <p class="h-sub">เลือกฐาน ดอกไม้ และเทียน แล้วไปเขียนคำอธิษฐาน</p>
+
+      <div class="krathong-stage" id="kStage">
+        <img id="kBase" class="krathong-base" src="assets/stickers/S__120397838_0-Photoroom.png" alt="กระทง" />
+        <!-- ★ ทางเลือก A: กระทงสำเร็จรูป 8 แบบ — ไม่ใช้ layer ประกอบ (flower/animal/top) แล้ว -->
+        <img id="kFace" class="deco-layer hidden" style="width:22%;left:39%;top:8%;border-radius:50%" alt="" />
+      </div>
+
+      <div class="panel">
+        <p class="small mb">เลือกแบบกระทง <span class="tier-hint">· แตะเพื่อเลือก</span></p>
+        <div class="opt-grid" id="krathongOpts">
+          <div class="opt active" onclick="pickKrathong(this,'assets/stickers/S__120397838_0-Photoroom.png')"><img src="assets/stickers/S__120397838_0-Photoroom.png"><span>พาสเทลจันทร์</span></div>
+          <div class="opt" onclick="pickKrathong(this,'assets/stickers/S__120397839_0-Photoroom.png')"><img src="assets/stickers/S__120397839_0-Photoroom.png"><span>ทองลายไทย</span></div>
+          <div class="opt" onclick="pickKrathong(this,'assets/stickers/S__120397843_0-Photoroom.png')"><img src="assets/stickers/S__120397843_0-Photoroom.png"><span>ชมพูสด</span></div>
+          <div class="opt" onclick="pickKrathong(this,'assets/stickers/S__120397846_0-Photoroom.png')"><img src="assets/stickers/S__120397846_0-Photoroom.png"><span>กระต่ายน้อย</span></div>
+          <div class="opt" onclick="pickKrathong(this,'assets/stickers/S__120397847_0-Photoroom.png')"><img src="assets/stickers/S__120397847_0-Photoroom.png"><span>ขาวครีมทอง</span></div>
+          <div class="opt" onclick="pickKrathong(this,'assets/stickers/S__120397841_0.png')"><img src="assets/stickers/S__120397841_0.png"><span>ขาว-ทอง</span></div>
+          <div class="opt" onclick="pickKrathong(this,'assets/stickers/S__120397844_0.png')"><img src="assets/stickers/S__120397844_0.png"><span>ทองฐานม่วง</span></div>
+          <div class="opt" onclick="pickKrathong(this,'assets/stickers/S__120397845_0.png')"><img src="assets/stickers/S__120397845_0.png"><span>บานเย็น</span></div>
+          <div class="opt" onclick="pickKrathong(this,'assets/stickers/Generated_Image_6zKoTJAKnzgDFgF9-Photoroom.png')"><img src="assets/stickers/Generated_Image_6zKoTJAKnzgDFgF9-Photoroom.png"><span>เรือสุพรรณหงส์</span></div>
+          <div class="opt" onclick="pickKrathong(this,'assets/stickers/gacha_coconut.png')"><img src="assets/stickers/gacha_coconut.png"><span>กะลามะพร้าว</span></div>
+        </div>
+      </div>
+
+      <div class="btn-row mt">
+        <button class="btn btn-gold btn-block" onclick="go('wish')">➡️ เขียนคำอวยพร</button>
+        <button class="btn btn-block" onclick="go('cover')">↩︎ กลับหน้าหลัก</button>
+        <button class="btn btn-ghost btn-block" onclick="go('cover')">🏠 หน้าหลัก</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 4) WISH ============ -->
+  <section class="scene" id="wish">
+    <div class="scene-inner">
+      <h2 class="h-title">เขียนคำอวยพร / ขอพร</h2>
+      <p class="h-sub">ใส่ชื่อเล่นและคำอธิษฐานของคุณ แล้วปล่อยกระทงลอยไป</p>
+      <div class="panel">
+        <div class="field" id="fName">
+          <label>ชื่อเล่น <span style="opacity:.6;font-weight:400">(ไม่บังคับ)</span></label>
+          <input id="nickname" maxlength="30" placeholder="เช่น ฟ้า, แจ็ค, น้องอั้ม" />
+          <div class="hint">เว้นว่างได้ = ผู้ไม่ประสงค์ออกนาม</div>
+        </div>
+        <div class="field" id="fWish">
+          <label>คำอวยพร / คำอธิษฐาน</label>
+          <textarea id="wishText" maxlength="180" placeholder="ขอให้ปีนี้..."></textarea>
+          <div class="hint" id="wishCount">0 / 180</div>
+        </div>
+        <div class="field" id="fConsent" style="margin-top:6px">
+          <label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer;font-weight:400">
+            <input type="checkbox" id="consent" style="width:auto;margin-top:3px" />
+            <span class="hint" style="margin:0">
+              ยินยอมให้แสดง <b>ชื่อเล่น</b> และ <b>คำอวยพร</b> ของฉันในสายน้ำรวม
+              ที่ผู้เข้าร่วมกิจกรรมคนอื่นมองเห็นได้ (ไม่บันทึกรูปถ่ายใบหน้าขึ้นระบบ)
+            </span>
+          </label>
+        </div>
+      </div>
+      <div class="btn-row mt">
+        <button class="btn btn-gold btn-lg btn-block" onclick="floatKrathong()">🪷 ลอยกระทง</button>
+        <button class="btn btn-ghost btn-block" onclick="go('krathong')">↩︎ กลับไปแต่งกระทง</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5) RIVER ============ -->
+  <section class="scene" id="river">
+    <div class="river-bg"></div>
+    <div class="water" id="water"></div>
+    <div id="riverKrathongs" style="position:absolute;inset:0;z-index:4;pointer-events:none"></div>
+
+    <!-- ★ Nav bar บน (ตาม reference) -->
+    <nav class="river-nav">
+      <img src="assets/com7_logo.png" alt="COM7" class="nav-logo" />
+      <div class="nav-menu">
+        <a class="active" onclick="go('cover')">หน้าหลัก</a>
+        <a onclick="toast('เร็ว ๆ นี้ 🪷')">กิจกรรม</a>
+        <a onclick="toast('เร็ว ๆ นี้ 🪷')">ผู้เข้าประกวด</a>
+        <a onclick="toast('เร็ว ๆ นี้ 🪷')">รางวัล</a>
+        <a onclick="toast('เร็ว ๆ นี้ 🪷')">กติกา</a>
+      </div>
+      <div class="nav-profile">👤</div>
+    </nav>
+
+    <!-- ★ Header บน: หัวเรื่อง + pill ยอด + chips (ตาม reference) -->
+    <div class="river-header">
+      <h1 class="river-title">คอมเซเว่น สานสายใจ</h1>
+      <p class="river-subtitle">ลอยกระทงออนไลน์ · ประกวดนพมาศ AI</p>
+      <div class="river-total-pill">
+        🪷 ลอยแล้ว <span id="krathongTotal">0</span> กระทง
+      </div>
+      <div class="chip-row" id="riverChips">
+        <button class="chip active" onclick="filterRiver(this,'all')">ทั้งหมด</button>
+        <button class="chip" onclick="filterRiver(this,'bless')">💗 คำอวยพร</button>
+        <button class="chip" onclick="filterRiver(this,'heart')">✍️ ความในใจ</button>
+        <button class="chip" onclick="filterRiver(this,'pray')">🙏 ขอพร</button>
+      </div>
+    </div>
+
+    <div class="river-ui">
+      <div class="scene-inner">
+        <div class="btn-row">
+          <button class="btn btn-gold btn-block" onclick="shareSite()">📲 ชวนเพื่อนมาลอยกระทง</button>
+          <button class="btn btn-block" onclick="go('krathong')">🪷 ลอยกระทงอีกใบ</button>
+          <button class="btn btn-ghost btn-block" onclick="go('cover')">🏠 กลับหน้าหลัก</button>
+        </div>
+        <div class="promo-banner">
+          🎁 <b>ลุ้นรับรางวัลพิเศษ</b> เพียงเข้าร่วมกิจกรรม โพสต์รูป ติด
+          <span class="hashtag">#COM7LoyKrathong</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <canvas id="exportCanvas" class="hidden"></canvas>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+/* ============================================================
+   CONFIG — deploy: กรอกค่าจริงก่อนใช้งาน production
+   ============================================================ */
+const SHEET_ENDPOINT   = "https://script.google.com/macros/s/AKfycbxwEz2bvtds7pdesrnXzHr9gOCKhfxp0xQuQwPS0XzpZd-UQBZrAIyqcxh-8ZAaVVCI-Q/exec"; // Google Apps Script Web app URL (.../exec)
+const SHEET_TOKEN      = "COM7LK2026ER";   // ★ ตรงกับ TOKEN ใน backend v4 // ต้องตรงกับ SHARED_SECRET ใน .gs
+const SITE_ORIGIN      = location.origin; // ใช้โดเมนจริง + HTTPS ตอน deploy
+const RIVER_LIMIT      = 60;    // ดึงกระทงล่าสุดกี่ใบ (ตรงกับ MAX_RIVER ใน backend)
+const RIVER_REFRESH_MS = 35000; // auto-refresh สายน้ำทุก 35 วิ (ปรับขึ้นจาก 20 เพื่อลดโหลด backend)
+function backendReady(){ return SHEET_ENDPOINT && !SHEET_ENDPOINT.startsWith("PASTE"); }
+
+/* ============================================================
+   GACHA TIER MAP (อ้างอิงชุดสติกเกอร์ใหม่จากเจน · ครีเอทีฟ)
+   Common  = ฐานใบตอง
+   Special = ฐานกะลา + ดอกไม้ทุกชนิด
+   Rare 1% = 3 ตัวพิเศษ (1% Club)
+   ============================================================ */
+const GACHA_TIER = {
+  common:  ["assets/stickers/base_bananaleaf.png"],
+  special: ["assets/stickers/base_coconut.png",
+            "assets/stickers/flower_lotus.png","assets/stickers/flower_marigold.png",
+            "assets/stickers/flower_jasmine.png","assets/stickers/flower_rose.png"],
+  rare:    ["assets/stickers/rare_gold_krathong.png",
+            "assets/stickers/rare_naga_crown.png",
+            "assets/stickers/rare_rainbow_moon.png"]
+};
+const RARE_RATE = 0.01; // Rare 1%
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const state = {
+  photoDataUrl:null, facingMode:"user", stream:null,
+  base:"assets/stickers/S__120397838_0-Photoroom.png", flower:"", animal:"", top:"",
+  nickname:"", wish:""
+};
+
+/* ============================================================
+   BACKEND — log ทุก event เข้า Google Sheet (fire-and-forget)
+   ============================================================ */
+/* ★ v3.1 (แจ็ค) — บันทึกเฉพาะ event สำคัญ ลด writes ตอนพีค ~50%
+   'nav' ยิงทุกการกดปุ่ม = write เยอะสุด → ตัดออกจาก backend (ยัง log ใน console ได้) */
+const LOG_WHITELIST = ['start','float','share','eligible','gacha'];
+function logEvent(event, extra={}){
+  const payload = Object.assign({
+    token:SHEET_TOKEN, ts:new Date().toISOString(),
+    name:state.nickname||"(ไม่ระบุ)", event, ua:navigator.userAgent
+  }, extra);
+  if(LOG_WHITELIST.indexOf(event) === -1){
+    // ไม่ critical (เช่น nav) → ไม่ยิง backend
+    return;
+  }
+  if(!SHEET_ENDPOINT || SHEET_ENDPOINT.startsWith("PASTE")){
+    console.log("[logEvent skipped - not deployed]", payload); return;
+  }
+  fetch(SHEET_ENDPOINT,{
+    method:"POST", mode:"no-cors",
+    headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify(payload)
+  }).catch(err=>console.warn("log failed",err));
+}
+
+/* ============================================================
+   SCENE ROUTER
+   ============================================================ */
+function go(id){
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);
+  el.classList.add('active'); el.scrollTop=0;
+  logEvent('nav',{detail:id});
+  if(id==='river'){ startRiverRefresh(); } else { stopRiverRefresh(); }
+}
+
+/* ============================================================
+   2) CAMERA + FILTERS
+   ============================================================ */
+async function startCam(){
+  try{
+    if(state.stream) state.stream.getTracks().forEach(t=>t.stop());
+    state.stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:state.facingMode},audio:false});
+    const v=document.getElementById('cam');
+    v.srcObject=state.stream; v.classList.remove('hidden');
+    document.getElementById('usrImg').classList.add('hidden');
+    document.getElementById('photoPlaceholder').classList.add('hidden');
+    applyFilter();
+  }catch(e){ toast('เปิดกล้องไม่ได้: '+e.message+' — ลองอัปโหลดรูปแทน'); }
+}
+function switchCam(){ state.facingMode = state.facingMode==='user'?'environment':'user'; if(state.stream) startCam(); }
+function loadFile(ev){
+  const f=ev.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    const img=document.getElementById('usrImg');
+    img.src=e.target.result; img.classList.remove('hidden');
+    document.getElementById('cam').classList.add('hidden');
+    document.getElementById('photoPlaceholder').classList.add('hidden');
+    if(state.stream) state.stream.getTracks().forEach(t=>t.stop());
+    applyFilter();
+  };
+  r.readAsDataURL(f);
+}
+function filterString(){
+  const b=document.getElementById('fBlur').value;
+  const br=document.getElementById('fBright').value;
+  const c=document.getElementById('fContrast').value;
+  const w=document.getElementById('fWarm').value;
+  return `blur(${b}px) brightness(${br}%) contrast(${c}%) sepia(${w}%)`;
+}
+function applyFilter(){
+  const f=filterString();
+  document.getElementById('cam').style.filter=f;
+  document.getElementById('usrImg').style.filter=f;
+}
+function preset(el,b,br,c,w){
+  document.querySelectorAll('#studio .panel .chip').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('fBlur').value=b;
+  document.getElementById('fBright').value=br;
+  document.getElementById('fContrast').value=c;
+  document.getElementById('fWarm').value=w;
+  applyFilter();
+}
+/* วาดรูป + โลโก้ COM7 ลง canvas (โลโก้ติดในกรอบเสมอ) */
+function renderToCanvas(){
+  const cam=document.getElementById('cam'), img=document.getElementById('usrImg');
+  const useCam=!cam.classList.contains('hidden');
+  const src=useCam?cam:img;
+  const W=720,H=960;
+  const cv=document.getElementById('exportCanvas'); cv.width=W; cv.height=H;
+  const ctx=cv.getContext('2d');
+  ctx.fillStyle="#05070f"; ctx.fillRect(0,0,W,H);
+  ctx.filter=filterString();
+  // cover-fit
+  const sw=useCam?src.videoWidth:src.naturalWidth;
+  const sh=useCam?src.videoHeight:src.naturalHeight;
+  if(sw&&sh){
+    const scale=Math.max(W/sw,H/sh);
+    const dw=sw*scale,dh=sh*scale;
+    ctx.drawImage(src,(W-dw)/2,(H-dh)/2,dw,dh);
+  }
+  ctx.filter="none";
+  return cv;
+}
+function stampLogoAndSave(cv){
+  const ctx=cv.getContext('2d');
+  const logo=new Image(); logo.crossOrigin="anonymous"; logo.src="assets/com7_logo.png";
+  logo.onload=()=>{
+    const lw=cv.width*0.30, lh=lw*(logo.height/logo.width);
+    // พื้นขาวโปร่งให้โลโก้คมชัด
+    ctx.fillStyle="rgba(255,255,255,.82)";
+    roundRect(ctx,24,cv.height-lh-40,lw+24,lh+24,14); ctx.fill();
+    ctx.drawImage(logo,36,cv.height-lh-28,lw,lh);
+    // tag
+    ctx.font="600 34px Anuphan, sans-serif"; ctx.fillStyle="#f6e2a6";
+    ctx.textAlign="right"; ctx.fillText("ลอยกระทง 2026",cv.width-30,60);
+    const url=cv.toDataURL('image/png');
+    state.photoDataUrl=url;
+    const a=document.createElement('a'); a.href=url; a.download="com7_loykrathong.png"; a.click();
+    syncKrathongFace();
+    logEvent('save_card');
+    toast('บันทึกรูปแล้ว ✅ (มีโลโก้ COM7 ในกรอบ)');
+  };
+  logo.onerror=()=>{ state.photoDataUrl=cv.toDataURL('image/png'); toast('บันทึกรูปแล้ว (โหลดโลโก้ไม่ได้)'); };
+}
+function savePhoto(){
+  const cam=document.getElementById('cam'), img=document.getElementById('usrImg');
+  if(cam.classList.contains('hidden') && img.classList.contains('hidden')){
+    toast('ยังไม่มีรูป — เปิดกล้องหรืออัปโหลดก่อนนะ'); return;
+  }
+  stampLogoAndSave(renderToCanvas());
+}
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();
+}
+
+/* ============================================================
+   3) DECORATE KRATHONG
+   ============================================================ */
+/* ★ ทางเลือก A: เลือกกระทงสำเร็จรูป 8 แบบ — เก็บใน state.base (ตรง schema/สายน้ำเดิม) */
+function pickKrathong(el,src){
+  setActive(el);
+  state.base = src;
+  document.getElementById('kBase').src = src;
+}
+/* ★ pickBase/Flower/Animal/Top ถูกถอดออก — เปลี่ยนเป็นเลือกกระทงสำเร็จรูป 8 แบบผ่าน pickKrathong() (ทางเลือก A) */
+function setActive(el){ el.parentElement.querySelectorAll('.opt').forEach(x=>x.classList.remove('active')); el.classList.add('active'); }
+function syncKrathongFace(){
+  const f=document.getElementById('kFace');
+  if(state.photoDataUrl){ f.src=state.photoDataUrl; f.classList.remove('hidden'); }
+  else f.classList.add('hidden');
+}
+
+/* ============================================================
+   4) WISH
+   ============================================================ */
+const BAD_WORDS=["เหี้ย","สัส","ควย","หี","เย็ด","แม่ง","ไอ้","อีดอก","ชิบหาย","fuck","shit","bitch"];
+function hasBadWord(t){ const s=t.toLowerCase(); return BAD_WORDS.some(w=>s.includes(w)); }
+document.getElementById('wishText').addEventListener('input',e=>{
+  document.getElementById('wishCount').textContent=e.target.value.length+" / 180";
+});
+function floatKrathong(){
+  const nick=document.getElementById('nickname').value.trim();
+  const wish=document.getElementById('wishText').value.trim();
+  const consentEl=document.getElementById('consent');
+  const fName=document.getElementById('fName'), fWish=document.getElementById('fWish'),
+        fConsent=document.getElementById('fConsent');
+  fName.classList.remove('err'); fWish.classList.remove('err'); fConsent.classList.remove('err');
+  const displayName = nick || 'ผู้ไม่ประสงค์ออกนาม';   // ★ ชื่อไม่บังคับ
+  if(!wish){ fWish.classList.add('err'); toast('กรุณากรอกคำอธิษฐาน'); return; }
+  if(hasBadWord(wish)){ fWish.classList.add('err'); toast('พบคำไม่สุภาพ กรุณาแก้ไขคำอวยพร'); return; }
+  // PDPA: ต้องยินยอมก่อนจึงบันทึกลงสายน้ำรวม (ตรงกับ backend consent===true)
+  if(!consentEl || !consentEl.checked){
+    fConsent.classList.add('err');
+    toast('กรุณายินยอมให้แสดงชื่อเล่นและคำอวยพรในสายน้ำรวมก่อนลอยกระทง');
+    return;
+  }
+  state.nickname=displayName; state.wish=wish;
+
+  // เก็บ local copy (เผื่อ backend ล่ม จะยังเห็นของตัวเองได้)
+  const mine={name:displayName, wish, base:state.base, flower:state.flower,
+              animal:state.animal, top:state.top, face:state.photoDataUrl, ts:Date.now(), mine:true};
+  const all=JSON.parse(localStorage.getItem('com7_krathongs')||'[]');
+  all.push(mine); localStorage.setItem('com7_krathongs',JSON.stringify(all.slice(-40)));
+
+  logEvent('float',{detail:wish.slice(0,60)});
+
+  // ★ ส่งกระทงเข้าสายน้ำรวมจริง (schema ตรง backend: id ออกให้ที่ฝั่ง .gs)
+  saveKrathongToRiver({
+    name:displayName, wish, base:state.base, flower:state.flower,
+    animal:state.animal, top:state.top
+  });
+
+  go('river');
+}
+
+/* ★ POST กระทงเข้าสายน้ำรวม — type:"krathong" + consent:true (fire-and-forget, no-cors) */
+function saveKrathongToRiver(k){
+  if(!backendReady()){ console.log("[saveKrathong skipped - not deployed]", k); return; }
+  // ★ schema ตรง backend v3.2 (ยึด 12 คอลัมน์เดิม + consent)
+  //   ของแต่ง = รวม flower/animal/top เป็น string เดียว (ตรงคอลัมน์ "ของแต่ง")
+  // ★ schema ตรง backend v4 (แท็บ Krathongs: ชื่อพนักงาน/บริษัท/คำอวยพร/แบบกระทง/consent)
+  //   ของแต่ง(flower/animal/top) รวมเข้า "แบบกระทง" เป็น string เดียว
+  const decoParts=[k.base,k.flower,k.animal,k.top].filter(Boolean);
+  const payload = {
+    token:SHEET_TOKEN,
+    action:"krathong",                     // ★ v4 ต้องระบุ action
+    consent:true,                          // PDPA — ยินยอมแสดงชื่อ/คำอวยพรในสายน้ำ
+    "ชื่อพนักงาน":k.name||"",
+    "บริษัท":k.company||"",
+    "คำอวยพร":k.wish||"",
+    "แบบกระทง":decoParts.join(", ")||"default"
+  };
+  // ★ PDPA (แนว A): รูปใบหน้าประมวลผลในเครื่องอย่างเดียว — ไม่ส่งขึ้น server
+  fetch(SHEET_ENDPOINT,{
+    method:"POST", mode:"no-cors",
+    headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify(payload)
+  }).then(()=>{
+    // no-cors อ่าน response ไม่ได้ — รูปใหญ่อาจใช้เวลาอัป ให้รอนานขึ้นแล้วรีเฟรช
+    setTimeout(fetchRiver, 1500);
+  }).catch(err=>console.warn("saveKrathong failed",err));
+}
+
+/* ============================================================
+   5) RIVER — วาดกระทงลอยรวม (ของเรา + คนอื่น/mock)
+   ============================================================ */
+/* MOCK ใช้เฉพาะตอนยังไม่ deploy backend (dev preview) เท่านั้น */
+const MOCK=[
+  {name:"พี่หนึ่ง",base:"assets/stickers/S__120397838_0-Photoroom.png",wish:"ขอให้โชคดีตลอดปี"},
+  {name:"ฟ้าใส",base:"assets/stickers/S__120397839_0-Photoroom.png",wish:"ขอให้สุขภาพแข็งแรงและได้ทำในสิ่งที่รัก"},
+  {name:"แจ็ค",base:"assets/stickers/gacha_coconut.png",wish:"คิดถึงทุกคนในทีมนะ ขอบคุณสำหรับปีนี้"},
+  {name:"น้องอั้ม",base:"assets/stickers/S__120397846_0-Photoroom.png",wish:"ขอให้ปีนี้เป็นปีที่ดีของทุกคน"},
+  {name:"คุณแมว",base:"assets/stickers/S__120397843_0-Photoroom.png",wish:"ขอให้มีอะไรฉ่ำรื่น พบเจอแต่สิ่งดี ๆ"},
+  {name:"พี่ตั้น",base:"assets/stickers/Generated_Image_6zKoTJAKnzgDFgF9-Photoroom.png",wish:"ขอให้โลกนี้ไม่มีรอยยับ และมีความอบอุ่น"},
+];
+
+/* กระทงจาก backend (สายน้ำรวมเห็นกันจริง) + ของเรา (local) */
+let riverRemote = [];           // ดึงจาก doGet?action=river
+let riverRefreshTimer = null;   // ตัวจับเวลา auto-refresh
+
+/* รวมสายน้ำ: remote (คนอื่น+เรา ที่ backend คืนมา) เป็นหลัก, เติม local ที่ backend อาจยังไม่ทันคืน,
+   ถ้ายังไม่ deploy backend เลย ค่อย fallback เป็น MOCK เพื่อ preview */
+function allKrathongs(){
+  const mine=JSON.parse(localStorage.getItem('com7_krathongs')||'[]');
+  if(!backendReady()){
+    return [...MOCK, ...mine];               // dev preview
+  }
+  // remote (จาก backend) เป็นหลัก — มีรูปหน้าจริงจาก Drive อยู่แล้ว
+  // เติมเฉพาะกระทงเราที่เพิ่งลอยแต่ backend ยังคืนไม่ทัน (กันจอว่างช่วงรออัปรูป)
+  const seen=new Set(riverRemote.map(k=>(k.name||'')+'|'+(k.wish||'')));
+  const localOnly=mine.filter(k=>!seen.has((k.name||'')+'|'+(k.wish||'')));
+  return [...riverRemote, ...localOnly];
+}
+
+/* ★ ดึงกระทงล่าสุดจาก backend ผ่าน JSONP (ข้าม origin ได้) */
+function fetchRiver(){
+  if(!backendReady()){ buildRiver(); return; }   // ยังไม่ deploy → ใช้ MOCK
+  const cb='__river_cb_'+Date.now();
+  const sep=SHEET_ENDPOINT.indexOf('?')>=0?'&':'?';
+  const url=SHEET_ENDPOINT+sep+'action=list&callback='+cb;   // ★ v3.2 API
+  const s=document.createElement('script');
+  let done=false;
+  window[cb]=function(resp){
+    done=true;
+    try{
+      // ★ normalize จาก schema ไทยของ backend → รูปแบบภายใน {name,wish,base,face}
+      const arr = (resp && resp.ok && Array.isArray(resp.data)) ? resp.data : [];
+      riverRemote = arr.map(function(r){
+        return {
+          name: r['ชื่อ']     || r['ชื่อพนักงาน'] || '',
+          wish: r['คำอวยพร']  || '',
+          base: r['แบบกระทง'] || r['กระทง'] || '',
+          deco: '',
+          face: ''            // ★ แนว A: ไม่มีรูปหน้าในสายน้ำ (PDPA)
+        };
+      });
+    }catch(e){ console.warn('river parse',e); }
+    buildRiver();
+    cleanup();
+  };
+  function cleanup(){ delete window[cb]; if(s.parentNode) s.parentNode.removeChild(s); }
+  s.onerror=function(){ if(!done){ console.warn('river fetch failed'); buildRiver(); cleanup(); } };
+  s.src=url;
+  document.head.appendChild(s);
+  // กัน callback ไม่กลับ (timeout 8s)
+  setTimeout(()=>{ if(!done){ buildRiver(); cleanup(); } }, 8000);
+}
+
+function buildRiver(){
+  const wrap=document.getElementById('riverKrathongs'); wrap.innerHTML='';
+  let list=allKrathongs();
+  updateKrathongTotal(list.length);                 // ★ ยอดรวมเรียลไทม์
+  if(riverFilter!=='all') list=list.filter(k=>wishCategory(k.wish)===riverFilter); // ★ กรองตามหมวด
+  const LAYERS=['layer-back','layer-mid','layer-front'];
+  list.forEach((k,i)=>{
+    const el=document.createElement('div');
+    const layer=LAYERS[i%3];                         // ★ กระจาย 3 ระนาบ ลึก-กลาง-หน้า
+    el.className='floating-krathong '+layer;
+    const top=(layer==='layer-back'?24:layer==='layer-mid'?40:56)+Math.random()*14;
+    const left=4+(i*13)%88;
+    el.style.top=top+'%'; el.style.left=left+'%';
+    const dur=(layer==='layer-back'?6.5:layer==='layer-mid'?5:4)+Math.random()*1.5;
+    el.style.animation=`driftRiver ${dur}s ease-in-out infinite`;
+    el.style.animationDelay=(-Math.random()*5)+'s';
+    el.title=(k.name||'')+(k.wish?(' — '+k.wish):'');
+    el.innerHTML=`<img src="${k.base||'assets/stickers/base_bananaleaf.png'}" style="width:100%" alt="${escapeHtml(k.name||'')}">`+
+      (k.face?`<img class="fk-face" src="${k.face}" alt="">`:``);
+    wrap.appendChild(el);
+  });
+}
+
+/* ★ เดาหมวดคำอวยพรจากข้อความ (ไม่มี field หมวดใน backend จึงเดาจาก keyword) */
+function wishCategory(wish){
+  const w=(wish||'').toLowerCase();
+  if(/ขอให้|ขอพร|สาธุ|โชค|ปัดเป่า|หนี้/.test(w)) return 'pray';
+  if(/รัก|คิดถึง|ขอบคุณ|เสียใจ|หัวใจ|ในใจ/.test(w)) return 'heart';
+  return 'bless';
+}
+let riverFilter='all';
+function filterRiver(el,cat){
+  riverFilter=cat;
+  el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  buildRiver();
+}
+/* ★ ยอดกระทงรวมแบบเรียลไทม์ (นับขึ้นนุ่ม ๆ) */
+function updateKrathongTotal(n){
+  const el=document.getElementById('krathongTotal'); if(!el) return;
+  const cur=parseInt(el.textContent.replace(/,/g,''))||0;
+  if(cur===n){ el.textContent=n.toLocaleString(); return; }
+  const step=Math.max(1,Math.ceil(Math.abs(n-cur)/12)), dir=n>cur?1:-1;
+  let v=cur; const t=setInterval(()=>{ v+=dir*step;
+    if((dir>0&&v>=n)||(dir<0&&v<=n)){v=n;clearInterval(t);}
+    el.textContent=v.toLocaleString(); },40);
+}
+/* (ปุ่มดูคำอวยพรทั้งหมดถูกแทนด้วย pill ยอดกระทง — showAllWishes ถอดออก) */
+
+
+/* เริ่ม/หยุด auto-refresh สายน้ำ (เรียกจาก go())
+   - jitter 0-3 วิ ก่อนยิงครั้งแรก กันทุกคนยิงพร้อมกันวินาทีเดียว (ลด concurrent spike)
+   - หยุดยิงเมื่อแท็บไม่โฟกัส (document.hidden) กันคนเปิดค้างกินโควตา */
+function startRiverRefresh(){
+  const jitter = Math.random()*3000;
+  setTimeout(fetchRiver, jitter);
+  if(riverRefreshTimer) clearInterval(riverRefreshTimer);
+  riverRefreshTimer=setInterval(function(){
+    if(document.hidden) return;           // แท็บไม่โฟกัส → ข้ามรอบนี้
+    fetchRiver();
+  }, RIVER_REFRESH_MS);
+}
+function stopRiverRefresh(){
+  if(riverRefreshTimer){ clearInterval(riverRefreshTimer); riverRefreshTimer=null; }
+}
+/* กลับมาโฟกัสแท็บตอนอยู่หน้าสายน้ำ → รีเฟรชทันที 1 ครั้ง */
+document.addEventListener('visibilitychange', function(){
+  if(!document.hidden && document.getElementById('river') &&
+     document.getElementById('river').classList.contains('active')){
+    fetchRiver();
+  }
+});
+
+/* ============================================================
+   6a) FORTUNE
+   ============================================================ */
+const FORTUNES=[
+  {n:"๑",t:"ปีนี้การงานรุ่งเรือง มีผู้ใหญ่เมตตา อุปสรรคจะคลี่คลายด้วยดี",
+    theme:"wc-work", badge:"💼 การงาน", title:"โปรเจกต์ปังทุกงาน", img:"assets/stickers/base_bananaleaf_plain.png"},
+  {n:"๗",t:"ความรักสดใส คนโสดจะพบคนถูกใจ คนมีคู่จะเข้าใจกันมากขึ้น",
+    theme:"wc-love", badge:"❤️ ความรัก", title:"รักหวานฉ่ำ", img:"assets/stickers/flower_lotus.png"},
+  {n:"๙",t:"การเงินไหลลื่น มีลาภลอยเข้ามา แต่ให้ระวังการใช้จ่ายฟุ่มเฟือย",
+    theme:"wc-money", badge:"💰 การเงิน · โชคลาภ", title:"ทรัพย์ไหลมาเทมา", img:"assets/stickers/rare_gold_krathong_plain.png"},
+  {n:"๓",t:"สุขภาพแข็งแรง ควรพักผ่อนให้พอ แล้วสิ่งดี ๆ จะตามมา",
+    theme:"wc-luck", badge:"🍀 สุขภาพ · โชคดี", title:"สุขภาพแข็งแรงปึ้ก", img:"assets/stickers/base_bananaleaf_plain.png"},
+  {n:"๕",t:"แสงเทียนนำทาง สิ่งที่ตั้งใจไว้จะสำเร็จภายในปีนี้ ขอให้มั่นใจ",
+    theme:"wc-warm", badge:"🌙 อบอุ่น · ให้กำลังใจ", title:"ปีแห่งเธอ", img:"assets/stickers/base_bananaleaf_plain.png"},
+  {n:"๘",t:"มีเกณฑ์เดินทางไกลและได้พบมิตรใหม่ที่นำโชคดีมาให้",
+    theme:"wc-travel", badge:"✈️ ท่องเที่ยว", title:"ได้ออกเดินทาง", img:"assets/stickers/lantern.png"},
+];
+function drawFortune(){
+  const btn=document.getElementById('fortuneBtn');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span>';
+  setTimeout(()=>{
+    const f=FORTUNES[Math.floor(Math.random()*FORTUNES.length)];
+    state.lastFortune=f;
+    document.getElementById('fortuneResult').innerHTML = buildWishCard(f);
+    sprinkleStars();
+    btn.disabled=false; btn.innerHTML='🎋 เขย่าอีกครั้ง';
+    // แสดงปุ่มบันทึกการ์ด
+    const sb=document.getElementById('saveCardBtn'); if(sb) sb.classList.remove('hidden');
+    logEvent('gacha',{detail:'fortune '+f.n, gachaItem:'fortune', gachaTier:'normal'});
+  },900);
+}
+
+/* สร้าง HTML การ์ดคำอวยพร navy & gold */
+function buildWishCard(f){
+  const nick = (state.nickname||'').trim();
+  const wish = (state.wish||'').trim();
+  const nameHtml = nick ? `<div class="wc-name">จาก <b>${escapeHtml(nick)}</b></div>` : '';
+  const wishHtml = wish ? escapeHtml(wish) : `"${f.t}"`;
+  return `
+  <div class="wc-wrap">
+    <div class="wc-card ${f.theme}" id="wishCardCapture">
+      <div class="wc-inner">
+        <svg class="wc-corner tl" viewBox="0 0 46 46"><use href="#wcflourish"/></svg>
+        <svg class="wc-corner tr" viewBox="0 0 46 46"><use href="#wcflourish"/></svg>
+        <svg class="wc-corner bl" viewBox="0 0 46 46"><use href="#wcflourish"/></svg>
+        <svg class="wc-corner br" viewBox="0 0 46 46"><use href="#wcflourish"/></svg>
+        <div class="wc-frame"></div>
+        <div class="wc-moon"></div><div class="wc-stars" id="wcStars"></div>
+        <div class="wc-badge">${f.badge}</div>
+        <img class="wc-krathong" src="${f.img}" alt="" crossorigin="anonymous">
+        <div class="wc-ftitle">${f.title}</div>
+        <div class="wc-ftext">${wishHtml}</div>
+        <div class="wc-divider"></div>
+        ${nameHtml}
+        <div class="wc-lucky">🍀 เลขนำโชค &nbsp;<b>${f.n}</b></div>
+        <div class="wc-footer">
+          <span class="wc-hashtag">#COM7ลอยกระทงสานสายใจ</span>
+          <img class="wc-com7img" src="assets/com7_logo.png" alt="COM7" crossorigin="anonymous">
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function escapeHtml(s){ return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function sprinkleStars(){
+  const box=document.getElementById('wcStars'); if(!box) return;
+  box.innerHTML='';
+  for(let i=0;i<26;i++){
+    const s=document.createElement('div'); s.className='wc-st';
+    s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*70+'%';
+    s.style.animationDelay=(Math.random()*3)+'s';
+    box.appendChild(s);
+  }
+}
+
+/* บันทึกการ์ดเป็นรูป (html2canvas) */
+function saveWishCard(){
+  const el=document.getElementById('wishCardCapture');
+  if(!el){ toast('กรุณาเสี่ยงเซียมซีก่อน'); return; }
+  if(typeof html2canvas!=='function'){ toast('กำลังโหลดตัวบันทึก ลองใหม่อีกครั้ง'); return; }
+  toast('กำลังสร้างการ์ด...');
+  html2canvas(el,{backgroundColor:null, scale:2, useCORS:true}).then(cv=>{
+    const a=document.createElement('a');
+    a.href=cv.toDataURL('image/png');
+    a.download='com7_wishcard_'+(state.nickname||'card')+'.png';
+    a.click();
+    logEvent('save_wishcard');
+    toast('บันทึกการ์ดแล้ว ✅');
+  }).catch(err=>{ console.warn(err); toast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'); });
+}
+
+/* ============================================================
+   6b) BLESS OTHERS
+   ============================================================ */
+function fillBlessTargets(){
+  const sel=document.getElementById('blessTarget'); sel.innerHTML='';
+  allKrathongs().forEach(k=>{
+    if(k.name===state.nickname) return;
+    const o=document.createElement('option'); o.value=k.name; o.textContent=k.name; sel.appendChild(o);
+  });
+  if(!sel.options.length){ const o=document.createElement('option'); o.textContent='(ยังไม่มีคนอื่นในสายน้ำ)'; sel.appendChild(o); }
+}
+function sendBless(){
+  const target=document.getElementById('blessTarget').value;
+  const msg=document.getElementById('blessText').value.trim();
+  if(!msg){ toast('กรุณากรอกข้อความอวยพร'); return; }
+  if(hasBadWord(msg)){ toast('พบคำไม่สุภาพ กรุณาแก้ไข'); return; }
+  logEvent('bless',{detail:'to '+target+': '+msg.slice(0,50)});
+  toast('ส่งคำอวยพรถึง '+target+' แล้ว 💛');
+  document.getElementById('blessText').value='';
+  setTimeout(()=>go('cover'),900); // ส่งเสร็จกลับหน้าหลัก
+}
+
+/* ============================================================
+   SHARE — navigator.share + fallback (คัดลอกลิงก์ / ดาวน์โหลดการ์ด)
+   ============================================================ */
+function shareSite(){
+  const url=SITE_ORIGIN + location.pathname;
+  const shareData={
+    title:'COM7 ลอยกระทง สานสายใจ 2026',
+    text:'มาร่วมลอยกระทงออนไลน์กับ COM7 เขียนคำอธิษฐานแล้วปล่อยลอยในสายน้ำรวมกัน 🪷',
+    url:url
+  };
+  if(navigator.share){
+    navigator.share(shareData)
+      .then(()=>logEvent('share',{detail:'native'}))
+      .catch(err=>{ if(err && err.name!=='AbortError') fallbackShare(url); });
+  }else{
+    fallbackShare(url);
+  }
+}
+function fallbackShare(url){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url)
+      .then(()=>{ toast('คัดลอกลิงก์แล้ว 📋 แชร์ให้เพื่อนได้เลย'); logEvent('share',{detail:'copy'}); })
+      .catch(()=>promptShare(url));
+  }else{
+    promptShare(url);
+  }
+}
+function promptShare(url){
+  window.prompt('คัดลอกลิงก์นี้เพื่อแชร์ให้เพื่อน:', url);
+  logEvent('share',{detail:'prompt'});
+}
+
+/* ============================================================
+   UTIL
+   ============================================================ */
+let toastTimer;
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2600);
+}
+/* spawn โคมลอย ambient */
+function spawnLanterns(){
+  const amb=document.getElementById('ambient');
+  for(let i=0;i<5;i++){
+    const l=document.createElement('img'); l.src='assets/stickers/lantern.png'; l.className='lantern';
+    l.style.left=(8+Math.random()*84)+'%';
+    l.style.animationDuration=(12+Math.random()*10)+'s';
+    l.style.animationDelay=(-Math.random()*12)+'s';
+    l.style.width=(40+Math.random()*30)+'px';
+    amb.appendChild(l);
+  }
+}
+/* init */
+spawnLanterns();
+logEvent('start');
+/* เตือน (เฉพาะตอนยังไม่ใส่ค่า config จริง) — production ต้องไม่เห็นข้อความนี้ */
+if(!backendReady()){
+  console.warn('%c[COM7 ลอยกระทง] ยังไม่ได้ตั้งค่า SHEET_ENDPOINT/SHEET_TOKEN — สายน้ำจะแสดงข้อมูลตัวอย่าง (MOCK) เท่านั้น ยังไม่รวมกับคนอื่นจริง','color:#e8c874;font-weight:bold');
+}
+</script>
+</body>
+</html>
