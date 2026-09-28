@@ -127,6 +127,23 @@ body.g-on::before{opacity:1}
 .cf{position:fixed;top:-12px;z-index:99;width:8px;height:12px;border-radius:3px;pointer-events:none;animation:cf 1.6s ease-in forwards}
 @keyframes cf{to{transform:translate(var(--dx),105vh) rotate(720deg);opacity:.8}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.sparkles{display:none}}
+
+
+
+
+@media(max-width:768px){}
+
+.topbar{position:absolute;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:14px 26px;max-width:1320px;margin:0 auto}
+.topbar .brand{font-size:1.5rem;font-weight:700;color:#fff;letter-spacing:1px;text-shadow:0 2px 10px rgba(0,0,0,.6)}
+.topbar .nav-links{display:flex;gap:26px;font-size:1rem;font-weight:500}
+.topbar .nav-links a{color:#F7E3A8;text-decoration:none;opacity:.9;transition:.2s;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+.topbar .nav-links a:hover,.topbar .nav-links a.active{opacity:1;color:#fff;text-shadow:0 0 12px rgba(231,197,106,.7)}
+.topbar .nav-toggle{display:none;background:none;border:0;color:#fff;font-size:1.7rem;cursor:pointer}
+@media(max-width:860px){
+  .topbar .nav-links{display:none;position:absolute;top:56px;right:18px;flex-direction:column;background:rgba(20,12,41,.96);padding:16px 22px;border-radius:14px;border:1px solid rgba(231,197,106,.4);gap:14px;z-index:60}
+  .topbar .nav-links.open{display:flex}
+  .topbar .nav-toggle{display:block}
+}
 </style>
 </head>
 <body>
@@ -136,6 +153,17 @@ body.g-on::before{opacity:1}
     <source media="(max-width:1100px),(max-aspect-ratio:1/1)" srcset="assets/bg-mobile.jpg">
     <img src="assets/bg-desktop.jpg" alt="COM7 ลอยกระทง สานสายใจ" fetchpriority="high">
   </picture>
+  <header class="topbar">
+    <div class="brand">COM7</div>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html">หน้าหลัก</a>
+      <a href="float.html">ลอยกระทง</a>
+      <a href="river.html">สายน้ำ COM7</a>
+      <a href="#" class="active">ประกวดนพมาศ</a>
+      <a href="rules.html">กติกา</a>
+    </nav>
+    <button class="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="เมนู">☰</button>
+  </header>
   <div class="sparkles" id="sp"></div>
   <svg class="wave" viewBox="0 0 1920 1080" preserveAspectRatio="none" aria-hidden="true">
     <defs>
@@ -214,7 +242,7 @@ body.g-on::before{opacity:1}
   <div class="f" id="rPh"><label>เบอร์ติดต่อ *</label><input id="rph" type="tel" inputmode="tel" autocomplete="tel" placeholder="08x-xxx-xxxx"></div>
   <div class="f" id="rG"><label>หมวดที่ประกวด *</label><select id="rg"><option value="">— เลือก —</option><option value="F">นางนพมาศ (หญิง)</option><option value="M">นพมาศ (ชาย)</option></select></div>
   <div class="f" id="rIm"><label>รูปนพมาศ AI * (JPG/PNG)</label><input id="rim" type="file" accept="image/jpeg,image/png"><img id="pv" class="pv" alt="ตัวอย่างรูป" hidden></div>
-  <div class="f" id="rLink"><label>ลิงก์โพสต์โซเชียล *</label><input id="rlink" type="url" inputmode="url" autocomplete="off" placeholder="วางลิงก์โพสต์สาธารณะที่ติดแฮชแท็ก (FB/IG/TikTok)"></div>
+  <div class="f" id="rLink"><label>ลิงก์โพสต์โซเชียล *</label><input id="rlink" type="url" inputmode="url" autocomplete="off" placeholder="วางลิงก์โพสต์สาธารณะที่ติด #COM7สานสายใจ (FB/IG/TikTok)"></div>
   <label class="ck2"><input type="checkbox" id="rck"><span>ข้าพเจ้ายินยอมให้ COM7 จัดเก็บและแสดงรูปภาพ ชื่อ และข้อมูลที่กรอกต่อสาธารณะในกิจกรรมนี้ และยินยอมเผยแพร่ภาพของตนเองต่อสาธารณะบนโซเชียลมีเดียเพื่อร่วมกิจกรรม (PDPA)</span></label>
   <button class="soft" id="rgo" onclick="submitReg()">ส่งเข้าประกวด</button>
 </div></div>
