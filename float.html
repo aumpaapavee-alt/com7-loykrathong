@@ -153,8 +153,10 @@ body{font-family:'Kanit',system-ui,sans-serif;color:var(--ink);background:var(--
   <div class="brand">COM7</div>
   <nav class="nav-links" id="navLinks">
     <a href="index.html">หน้าหลัก</a>
-    <a href="#" class="active">สายน้ำ COM7</a>
-    <a href="contest.html">ผู้เข้าประกวด</a>
+    <a href="#" class="active">ลอยกระทง</a>
+    <a href="river.html">สายน้ำ COM7</a>
+    <a href="contest.html">ประกวดนพมาศ</a>
+    <a href="contestants.html">ผู้เข้าประกวด</a>
     <a href="rules.html">กติกา</a>
   </nav>
   <button class="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="เมนู">☰</button>
@@ -258,8 +260,8 @@ body{font-family:'Kanit',system-ui,sans-serif;color:var(--ink);background:var(--
 
 <script>
 /* ============ CONFIG ============ */
-const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbxwEz2bvtds7pdesrnXzHr9gOCKhfxp0xQuQwPS0XzpZd-UQBZrAIyqcxh-8ZAaVVCI-Q/exec";  // ★ ใส่ Web App URL หลัง deploy
-const SHEET_TOKEN     = "COM7LK2026ER";             // ★ ตรงกับ backend v4
+const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbw9G4gVRJXPA-n5pmkMApcWFCm7_q7fBcXzb_DXVRkgbYfC_FO4nXy7RgKV31qh8vwe/exec";  // ★ ใส่ Web App URL หลัง deploy
+const SHEET_TOKEN     = "COM7LKER2569";             // ★ ตรงกับ backend v4
 function backendReady(){ return SHEET_ENDPOINT && !SHEET_ENDPOINT.startsWith("PASTE"); }
 
 /* ★ กระทง = ภาพจริงตัดพื้นหลังโปร่ง (ไม่ใช้ emoji) — config แยก แก้ง่าย */
